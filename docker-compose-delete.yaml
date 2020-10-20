@@ -1,0 +1,14 @@
+version: "3.4"
+
+services:
+
+  setup_s3_bucket:
+    image: marcellodesales/terraform-setup-s3-bucket
+    build: .
+    volumes:
+      - ${HOME}/.aws:/root/.aws
+    environment:
+      - USE_LOCAL_CONFIG=true
+      - DELETE_BUCKET=true
+      - BUCKET_NAME=${BUCKET_NAME:-super-cluster-state-dev}
+      - BUCKET_DEPLOYER_USER=${BUCKET_DEPLOYER_USER:-terraform-deployer}
