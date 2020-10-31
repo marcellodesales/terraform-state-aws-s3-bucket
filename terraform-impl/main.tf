@@ -115,8 +115,6 @@ resource "aws_s3_bucket_policy" "terraform_state" {
 EOF
 }
 
-var
-
 # create-dynamodb-lock-table.tf
 resource "aws_dynamodb_table" "dynamodb-terraform-state-lock" {
   name           = var.dynamodb_state_table
