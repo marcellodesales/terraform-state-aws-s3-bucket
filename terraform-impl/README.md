@@ -36,3 +36,36 @@ this_terraform_deployer_users = {
   "terraform-deployer" = "arn:aws:iam::761010771720:user/terraform-deployer"
 }
 ```
+
+# Setup other projects
+
+* View the current state
+
+```
+$ terraform output
+this_dynamodb_lock_state_table = arn:aws:dynamodb:sa-east-1:761010771720:table/terraform-state-lock-dynamo
+this_s3_bucket_arn = arn:aws:s3:::marcello-bucket
+this_s3_bucket_bucket_domain_name = marcello-bucket.s3.amazonaws.com
+this_s3_bucket_bucket_regional_domain_name = marcello-bucket.s3.sa-east-1.amazonaws.com
+this_s3_bucket_hosted_zone_id = Z7KQH4QJS55SO
+this_s3_bucket_id = marcello-bucket
+this_s3_bucket_region = sa-east-1
+this_terraform_deployer_users = {
+  "terraform-deployer" = "arn:aws:iam::761010771720:user/terraform-deployer"
+}
+```
+
+* Create the block
+
+```terraform
+terraform {
+  required_version = "~> 0.12.24" # which means ">= 0.12.24" and "< 0.13"
+  backend "s3" {
+        bucket         = "terraform-remote-store"
+        encrypt        = true
+        key            = "terraform.tfstate"
+        region         = "eu-west-1"
+        dynamodb_table = "terraform-state-lock-dynamo"
+  }
+}
+```

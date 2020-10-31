@@ -1,3 +1,12 @@
+# Using env vars
+
+* Execute the following to get the AWS env vars
+  * https://unix.stackexchange.com/questions/272689/how-to-set-multiple-env-variables-from-stdout-pipe/272690#272690
+
+```
+source <(~/dev/github.com/marcellodesales/aws-s3-bucket-state/aws-env.sh | tail -n +2 | sed 's/ //g; s/^/export /')
+```
+
 # Setup Terraform data
 
 ```
