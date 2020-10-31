@@ -1,8 +1,41 @@
-# Setup S3 Bucket for Terraform
+# S3 Bucket for Terraform State
 
-* Setup an AWS S3 Bucket to use as a terraform backend
+* Setup an AWS S3 Bucket to use as a terraform backend.
 
-```shell
+# Setup
+
+* Install the latest verison of terraform
+* Update the file `s3-tf-deployers.tfvars`.
+
+> NOTE: Make sure to select the s3 bucket name that's globally unique!
+> * Make sure to update the other info.
+
+```terraform
+s3_bucket_name = "my-terraform-state-bucket"
+
+deploy_policy_arns = [
+  "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+  "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+]
+
+# https://stackoverflow.com/questions/40631977/how-do-i-use-terraform-to-maintain-manage-iam-users/57416414#57416414
+deploy_users = {
+  "terraform-deployer" = {
+    path          = "/"
+    force_destroy = true
+    tag_email     = "nobody@example.com"
+  }
+}
+
+# Dynamo lock table's default name if needed to be different
+# dynamodb_state_table = "terraform-state-lock-dynamo"
+```
+
+# Running
+
+* Run `terraform apply` with the tfvars file above.
+
+```console
 $ terraform apply --auto-approve -var-file s3-tf-deployers.tfvars
 module.iam_group_with_policies.aws_iam_group.this[0]: Refreshing state... [id=terraform-deployers]
 aws_dynamodb_table.dynamodb-terraform-state-lock: Refreshing state... [id=terraform-state-lock-dynamo]
@@ -37,11 +70,11 @@ this_terraform_deployer_users = {
 }
 ```
 
-# Setup other projects
+# Use in terraform projects
 
-* View the current state
+* View the current state by using `terraform output`
 
-```
+```console
 $ terraform output
 this_dynamodb_lock_state_table = arn:aws:dynamodb:sa-east-1:761010771720:table/terraform-state-lock-dynamo
 this_s3_bucket_arn = arn:aws:s3:::marcello-bucket
@@ -55,17 +88,22 @@ this_terraform_deployer_users = {
 }
 ```
 
-* Create the block
+* In your terraform provider's file, add the backend setup
 
 ```terraform
 terraform {
   required_version = "~> 0.12.24" # which means ">= 0.12.24" and "< 0.13"
-  backend "s3" {
-        bucket         = "terraform-remote-store"
-        encrypt        = true
-        key            = "terraform.tfstate"
-        region         = "eu-west-1"
-        dynamodb_table = "terraform-state-lock-dynamo"
-  }
+  backend "s3" {}
 }
+```
+
+* Create the file backend file
+
+```console
+$ cat backend.tfvars
+bucket               = "my-terraform-state-bucket"
+dynamodb_table       = "terraform-state-lock-dynamo"
+key                  = "tf-state.json"
+region               = "sa-east-1"
+workspace_key_prefix = "segment"
 ```

@@ -8,6 +8,10 @@ variable "s3_bucket_name" {
   default = "super-crazy-name"
 }
 
+variable "dynamodb_state_table" {
+  default = "terraform-state-lock-dynamo"
+}
+
 provider "aws" {
   region = var.aws_region
 }
@@ -111,9 +115,11 @@ resource "aws_s3_bucket_policy" "terraform_state" {
 EOF
 }
 
+var
+
 # create-dynamodb-lock-table.tf
 resource "aws_dynamodb_table" "dynamodb-terraform-state-lock" {
-  name           = "terraform-state-lock-dynamo"
+  name           = var.dynamodb_state_table
   hash_key       = "LockID"
   read_capacity  = 20
   write_capacity = 20
