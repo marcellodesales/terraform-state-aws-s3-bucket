@@ -1,15 +1,32 @@
 # Using env vars
 
+* Creating the S3 bucket to use as the state for Terraform
+* Creating a ditributed lock using Dynamo DB to avoid multiple users stepping on each other.
+
+There are 2 implementations: Docker and Terraform itself.
+
+# Setup
+
+* Start by collecting the AWS Credentials
+
 * Execute the following to get the AWS env vars
   * https://unix.stackexchange.com/questions/272689/how-to-set-multiple-env-variables-from-stdout-pipe/272690#272690
 
-```
+```console
 source <(~/dev/github.com/marcellodesales/aws-s3-bucket-state/aws-env.sh | tail -n +2 | sed 's/ //g; s/^/export /')
 ```
 
-# Setup Terraform data
+* Go to either Docker or Terraform implementation.
 
-```
+# Terraform
+
+* Go to the directory `terraform-impl` for details.
+
+# Docker Implementation
+
+* Setup Terraform data
+
+```console
 $ docker-compose up --build
 Building setup_s3_bucket
 Step 1/6 : FROM amazon/aws-cli
